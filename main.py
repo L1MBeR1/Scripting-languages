@@ -1,29 +1,28 @@
-from db import create_database, fetch_and_save_posts, get_posts_by_user
-
+import sys
+from PyQt5.QtWidgets import QApplication
+from main_window import MainWindow
+from database_manager import DatabaseManager
 
 def main():
-    while True:
-        print("\nВыберите действие:")
-        print("1. Создать базу данных")
-        print("2. Получить данные с сервера и сохранить в базу данных")
-        print("3. Чтение данных из базы по user_id")
-        print("4. Выход")
+    db_manager = DatabaseManager('posts.db')
+    db_manager.create_table()
 
-        choice = input("Ваш выбор: ")
+    if db_manager.is_table_empty():
+        db_manager.fetch_and_save_posts()
 
-        if choice == '1':
-            create_database()
-        elif choice == '2':
-            fetch_and_save_posts()
-        elif choice == '3':
-            user_id = input("Введите user_id для получения постов: ")
-            get_posts_by_user(user_id)
-        elif choice == '4':
-            print("Выход из программы.")
-            break
-        else:
-            print("Неверный выбор. Пожалуйста, попробуйте снова.")
+    posts = db_manager.fetch_all_posts()
+    if posts is None or len(posts) == 0:
+        print("Таблица не существует или данные отсутствуют.")
+    else:
+        print("Таблица с записями существует")
 
+    app = QApplication(sys.argv)
+    main_window = MainWindow(db_manager)
+    main_window.show()
+
+    exit_code = app.exec_()
+    db_manager.close_connection()
+    sys.exit(exit_code)
 
 if __name__ == "__main__":
     main()
