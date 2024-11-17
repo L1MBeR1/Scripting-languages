@@ -1,4 +1,3 @@
-# add_post_dialog.py
 from PyQt5.QtWidgets import (
     QDialog,
     QFormLayout,
